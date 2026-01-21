@@ -1,142 +1,150 @@
-#include "pile.h"
+#include "../include/pile.h"
 #include <stdlib.h>
 
+struct stack_s {       
+    int content[STACK_SIZE];
+    int top;
+};
+
+
 stack new() {
-    struct stack* s=malloc(sizeof(struct stack));  //on alloue la memoire pour une pile
-    s->top=-1;                                  //qui sera vide
-    return s;
+    struct stack_s* s = malloc(sizeof(struct stack_s));  //on alloue la memoire pour une pile
+    if (s == NULL) {
+        perror("Erreur d'allocation de la pile");
+        exit(EXIT_FAILURE);
+    }
+    s->top=-1;                                  
+    return (stack)s;
 }
 
 int isEmpty(stack s) {
-    struct stack* r=s;     //necesaire pour pouvoir travaille avec le type struct stack concret
+    struct stack_s * r = s;    
     return (r->top < 0);
 }
 
-void push(stack* s,elem e) {
-    struct stack* r=*s;
+void push(stack s,elem e) {
+    struct stack_s* r = s;
     r->top+=1;
     r->content[r->top]=e;
 }
 
-void pop(stack* s) {
-    if (isEmpty(s) == 0) {     //si la pile est non vide
-        struct stack* r=*s;
+void pop(stack s) {
+    if (isEmpty(s) == 0) {     
+        struct stack_s* r = s;
         r->top-=1;
     }
 }
 
-void somme(stack* s) {
-    struct stack* r=*s;
-    if (r->top >= 1) {        //si la pile a au moins 2 elements
-        int a=r->content[r->top];    //on stock nos 2 elements
-        int b=r->content[r->top-1];
-        pop(s);                      //on depile 2 fois
+void somme(stack s) {
+    struct stack_s* r = s;
+    if (r->top >= 1) {          // necessite 2 elements dans la pile 
+        int a = r->content[r->top];    
+        int b = r->content[r->top-1];
+        pop(s);                      
         pop(s);
-        push(s, a+b);               //on empile la somme
+        push(s, a+b);              
     }
 }
 
-void difference(stack* s) {
-    struct stack* r=*s;
+void difference(stack s) {
+    struct stack_s* r = s;
     if (r->top >= 1) {        
-        int a=r->content[r->top];    
-        int b=r->content[r->top-1];
+        int a = r->content[r->top];    
+        int b = r->content[r->top-1];
         pop(s);              
         pop(s);
-        push(s, b-a);               //on empile la difference (attention, second-premier)
+        push(s, b-a);               
     }
 }    
 
-void produit(stack* s) {
-    struct stack* r=*s;
+void produit(stack s) {
+    struct stack_s* r = s;
     if (r->top >= 1) {          
-        int a=r->content[r->top];    
-        int b=r->content[r->top-1];
+        int a = r->content[r->top];    
+        int b = r->content[r->top-1];
         pop(s);                      
         pop(s);
-        push(s, a*b);               //on empile le produit
+        push(s, a*b);               
     }
 }
 
-void division(stack* s) {
-    struct stack* r=*s;
+void division(stack s) {
+    struct stack_s* r = s;
     if (r->top >= 1) {          
-        int a=r->content[r->top];    
-        int b=r->content[r->top-1];
+        int a = r->content[r->top];    
+        int b = r->content[r->top-1];
         pop(s);                      
         pop(s);
-        push(s, b/a);               //on empile le quotient (second/premier)
+        push(s, b/a);              
     }
 }
 
-void reste(stack* s) {
-    struct stack* r=*s;
+void reste(stack s) {
+    struct stack_s* r = s;
     if (r->top >= 1) {          
-        int a=r->content[r->top];    
-        int b=r->content[r->top-1];
+        int a = r->content[r->top];    
+        int b = r->content[r->top-1];
         pop(s);                      
         pop(s);
-        push(s, b%a);               //on empile le reste de la division (second par premier)
+        push(s, b%a);               
     }
 }
 
-void zero(stack* s) {
-    if (isEmpty(s) == 0) {     //si la pile est non vide
-        struct stack* r=*s;
-        int a=r->content[r->top];        //on stock l'element
-        pop(s);                         //puis on le depile
-        if (a==0) {
-            push(s, 1);     //on empile 1 si il vaut 0...
+void zero(stack s) {
+    if (isEmpty(s) == 0) {     
+        struct stack_s* r = s;
+        int a = r->content[r->top];        
+        pop(s);                       
+        if (a == 0) {
+            push(s, 1);     
         }
         else {
-            push(s, 0);        //...et 0 sinon
+            push(s, 0);      
         }
     }
 }
 
-void plusgrand(stack* s) {
-    struct stack* r=*s;
-    if (r->top >= 1) {       // on depile 2 elements
-        int a=r->content[r->top];    
-        int b=r->content[r->top-1];
+void plusgrand(stack s) {
+    struct stack_s* r = s;
+    if (r->top >= 1) {       
+        int a = r->content[r->top];    
+        int b = r->content[r->top-1];
         pop(s);                      
         pop(s);
         if (b>a) {
-            push(s, 1);   //on empile 1 si le second est plus grand...
+            push(s, 1);   
         }
         else {
-            push(s, 0);    //...et 0 sinon
+            push(s, 0);    
         }
     }
 }
 
-void duplique(stack* s) {
-    struct stack* r=*s;
-    if (isEmpty(s) == 0) {    //si la pile est non vide
-        int a=r->content[r->top];   //on stock notre element
-        pop(s);                  //on le depile
-        push(s, a);            //puis le rempile 2 fois
+void duplique(stack s) {
+    struct stack_s* r = s;
+    if (isEmpty(s) == 0) {    
+        int a = r->content[r->top];  
+        pop(s);                  
+        push(s, a);            
         push(s, a);
     }
 }
 
-void tourne(stack* s) {
-    struct stack* r=*s;
-    if (r->top >= 1) {       //si il y a au moins 2 elements
-        int a=r->content[r->top];    
-        int b=r->content[r->top-1];
+void tourne(stack s) {
+    struct stack_s* r = s;
+    if (r->top >= 1) {     
+        int a = r->content[r->top];     
+        int b = r->content[r->top-1];   
         pop(s);
         pop(s);
-        if (r->top >= a-1) {     //on verifie si il y a assez de profondeur dans la pile
-            int i;
-            int t;
-            for (i=0; i<b; i++) {   //on va faire tourner b fois
-                t=r->content[r->top];   //on stock la valeur a faire tourner qui s'actualisera a chaque itteration
-                int j;          
-                for (j=0; j<a; j++) {   //on fait tourner a la profondeur a
-                    r->content[r->top -j]=r->content[r->top -(j+1)];  //on decale
+    
+        if (r->top >= a - 1 && a > 0) {     
+            for (int i = 0; i < b; i++) {   
+                int t = r->content[r->top]; 
+                for (int j = 0; j < a - 1; j++) {   
+                    r->content[r->top - j] = r->content[r->top - (j + 1)];  
                 }
-                r->content[r->top -a]=t;   //on remplace le dernier
+                r->content[r->top - (a - 1)] = t;  
             }
         }
     }

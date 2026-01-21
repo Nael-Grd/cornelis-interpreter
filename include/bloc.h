@@ -3,17 +3,17 @@
  
 #include "couleur.h"   
 
-typedef enum {    //type pour la direction
+typedef enum {   
     EST,
     SUD,
     OUEST,
     NORD
-}direction;
+} direction;
 
-typedef enum {    //type pour le bord
+typedef enum {    
     BABORD,
     TRIBORD
-}bord;
+} bord;
 
 /*@requires valid adress for info
 @assigns traite
@@ -44,7 +44,6 @@ direction changer_direction(direction d);
 @assigns nothing
 @ensures return the coordinates of the pixel of the following block */
 int* pixel_suivant(int** bloc, direction d, bord b, int hauteur, int largeur);
-
 
 #endif
 

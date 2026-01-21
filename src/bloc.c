@@ -2,22 +2,27 @@
 #include <string.h>
 #include <stdlib.h>
 
-int** traitement(infoPPM* info, couleur init, int x, int y, int** traite) {
-    memset(traite, 0, (info->largeur)*(info->hauteur)*sizeof(int));     //on initialise le tableau avec des 0
-    traite[x][y] = 1;        //on marquer le pixel comme traite
-    
-    if (nom_couleur(info->pixels[x][y]) == init) {     //on verifie si le pixel est de la bonne couleur
-        int voisins[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};            //on explore les 4 voisins
-        int k;
-        for (k = 0; k < 4; ++k) {
-            int vx = (x + voisins[k][0] + info->largeur) % info->largeur;  //on gere les bords en tant que tore
-            int vy = (y + voisins[k][1] + info->hauteur) % info->hauteur; 
-            if (traite[vx][vy] == 0) {            //si le voisin n'est pas traite
-                traitement(info, init, vx, vy, traite);
-            }
-        }
+// Fonction auxilliaire pour traitement
+void explorer_bloc(infoPPM* info, couleur init, int x, int y, int** traite) {
+    if (traite[x][y] == 1) return; 
+    if (nom_couleur(info->pixels[y * info->largeur + x]) != init) return; // Pas la bonne couleur
+
+    traite[x][y] = 1; // traité
+
+    int voisins[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    for (int k = 0; k < 4; ++k) {
+        int vx = (x + voisins[k][0] + info->largeur) % info->largeur;
+        int vy = (y + voisins[k][1] + info->hauteur) % info->hauteur;
+        explorer_bloc(info, init, vx, vy, traite);
     }
-return traite;
+}
+
+int** traitement(infoPPM* info, couleur init, int x, int y, int** traite) {
+    for(int i = 0; i < info->hauteur; i++) {
+        for(int j = 0; j < info->largeur; j++) traite[i][j] = 0;
+    }
+    explorer_bloc(info, init, x, y, traite);
+    return traite;
 }
 
 bord changer_bord(bord b) {
@@ -42,7 +47,7 @@ direction changer_direction(direction d) {
             return EST;
             break;
         default:               
-            return 1;
+            return d;
     }
 }
 
