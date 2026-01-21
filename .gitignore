@@ -1,0 +1,11 @@
+# Exécutables
+bin/
+cornelis
+
+# Objets et fichiers temporaires
+build/
+*.o
+*.gch
+
+# Documents 
+Rapport.pdf
