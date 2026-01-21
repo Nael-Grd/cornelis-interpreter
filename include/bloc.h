@@ -15,6 +15,8 @@ typedef enum {
     TRIBORD
 } bord;
 
+typedef struct { int x, y; } Point;
+
 /*@requires valid adress for info
 @assigns traite
 @ensures return the table with 1 for the block and 0 elsewhere */
@@ -43,7 +45,7 @@ direction changer_direction(direction d);
 /*@requires height and width of the image
 @assigns nothing
 @ensures return the coordinates of the pixel of the following block */
-int* pixel_suivant(int** bloc, direction d, bord b, int hauteur, int largeur);
+Point pixel_suivant(int** bloc, direction d, bord b, int hauteur, int largeur);
 
 #endif
 

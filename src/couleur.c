@@ -46,16 +46,16 @@ couleur nom_couleur(pixel p) {
     } else if (p.rouge == 128 && p.vert == 0 && p.bleu == 128) {
         return magenta_fonce;
     } else {
-        return autre;    //cas ou couleur non codante
+        return autre;    //cas couleur non codante
     }
 }
 
 int dif_couleur(couleur c1,couleur c2) {
     couleur cycle[3][6] = {{rouge_clair, jaune_clair, vert_clair, cyan_clair, bleu_clair, magenta_clair},       //tableau des couleurs avec le meme 2nd indice pour les memes couleurs
                            {rouge_normal, jaune_normal, vert_normal, cyan_normal, bleu_normal, magenta_normal},
-                           {rouge_clair, jaune_clair, vert_clair, cyan_clair, bleu_clair, magenta_clair}};
+                           {rouge_fonce, jaune_fonce, vert_fonce, cyan_fonce, bleu_fonce, magenta_fonce}};
 
-    int indice1=-1, indice2=-1;   //on va chercher le 2nd indice de chaque couleur
+    int indice1=-1, indice2=-1;   // on va chercher le 2nd indice de chaque couleur
     int i, j;
     for (i=0; i<3; i++) {
         for (j=0; j<6; j++) {
@@ -65,10 +65,10 @@ int dif_couleur(couleur c1,couleur c2) {
                 indice2=j;
         }
     }
-    if (indice1 != -1 && indice2 != -1) {    //si les 2 couleurs sont codantes
+    if (indice1 != -1 && indice2 != -1) {    // si les 2 couleurs sont codantes
         int dif = indice2 - indice1;
         if (dif < 0) {
-            dif += 6;      //attention si difference negative car onparcours le cycle de gauche vers droite
+            dif += 6;      // attention si difference negative car onparcours le cycle de gauche vers droite
         }
         return dif;
     }
@@ -84,7 +84,7 @@ int dif_luminosite(couleur c1, couleur c2) {
         case cyan_clair:
         case bleu_clair:
         case magenta_clair:
-            luminosite1=1;  //on numerote 1 la lumonosite claire
+            luminosite1 = 1;  // on numerote 1 la lumonosite claire
             break;
         case rouge_normal:
         case jaune_normal:
@@ -92,7 +92,7 @@ int dif_luminosite(couleur c1, couleur c2) {
         case cyan_normal:
         case bleu_normal:
         case magenta_normal:
-            luminosite1 = 2;  //on numerote 2 la lumonosite normale
+            luminosite1 = 2;  // on numerote 2 la lumonosite normale
             break;
         case rouge_fonce:
         case jaune_fonce:
@@ -100,13 +100,13 @@ int dif_luminosite(couleur c1, couleur c2) {
         case cyan_fonce:
         case bleu_fonce:
         case magenta_fonce:
-            luminosite1 = 3;  //on numerote 3 la lumonosite foncee
+            luminosite1 = 3;  // on numerote 3 la lumonosite foncee
             break;
         default:
-            return -1;  //cas couleur non codante, on s'arret la
+            return -1;  // cas couleur non codante, on s'arret la
     }
 
-    switch (c2) {               //de meme que pour c1
+    switch (c2) {               // de meme que pour c1
         case rouge_clair:
         case jaune_clair:
         case vert_clair:
@@ -136,7 +136,7 @@ int dif_luminosite(couleur c1, couleur c2) {
     }
     int dif=luminosite2-luminosite1;
     if (dif < 0) {
-        dif += 3;  //3 etant la taille du cycle et comme on parcours le cycle de gauche a droite
+        dif += 3;  // 3 etant la taille du cycle et comme on parcours le cycle de gauche a droite
     }
     return dif;
 }

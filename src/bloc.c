@@ -51,12 +51,11 @@ direction changer_direction(direction d) {
     }
 }
 
-
 int taille_bloc(int** bloc, int largeur, int hauteur) {
     int i, j;
     int cpt=0;
-    for (i=0; i<largeur; i++) {          //on parcours tout le tableau pour compter le nombre de 1 dedans
-        for (j=0; j<hauteur; j++) {
+    for (i=0; i<hauteur; i++) {          // On parcourt le tableau et on compte le nombre de 1 
+        for (j=0; j<largeur; j++) {
             if (bloc[i][j] == 1)
                 cpt+=1;
         }
@@ -69,159 +68,138 @@ int nombre_blocs(infoPPM* info, int** traite) {
     int largeur = info->largeur;
     int blocs = 0;
 
-    int x, y;
-    for (x = 0; x < hauteur; x++) {
-        for (y = 0; y < largeur; y++) {
-            if (!traite[x][y]) {  //si le pixel n'a pas ete traite
-                blocs++;  //on a un nouveau bloc
-                couleur couleur_initiale = nom_couleur(info->pixels[x][y]);  //couleur du pixel initial du bloc
-                traite[x][y] = 1;     //on marque le pixel comme traite
-                
-                int i, j;
-                for (i = 0; i < hauteur; i++) {
-                    for (j = 0; j < largeur; j++) {
-                        if (!traite[i][j] && (nom_couleur(info->pixels[i][j]) == couleur_initiale)) {
-                            traite[i][j] = 1;       //on marque le pixel comme traite
-                        }
-                    }
-                }
+    for (int i = 0; i < hauteur; i++) {
+        for (int j = 0; j < largeur; j++) {
+            traite[i][j] = 0;
+        }
+    }
+
+    for (int y = 0; y < hauteur; y++) {
+        for (int x = 0; x < largeur; x++) {
+            if (traite[y][x] == 0) { 
+                blocs++;         // nouveau bloc
+                couleur c = nom_couleur(info->pixels[y * largeur + x]);
+                explorer_bloc(info, c, x, y, traite);   // exploration récurssive
             }
         }
     }
     return blocs;
 }
 
-int* pixel_suivant(int** bloc, direction d, bord b, int hauteur, int largeur) {
-    int pixel_x ;       //coordonnees du pixel retenu
-    int pixel_y ;
+
+
+Point pixel_suivant(int** bloc, direction d, bord b, int hauteur, int largeur) {
+
+    Point res;
     int frontiere;
+
     switch (d) {
-        case EST:
-            int x, y;
-            for (x = 0; x < largeur; x++) {       //on cherche la frontiere la plus a l'est
-                    for (y = 0; y < hauteur; y++) {
+        case EST: {
+            for (int x = 0; x < largeur; x++) {       //on cherche la frontiere la plus a l'est
+                    for (int y = 0; y < hauteur; y++) {
                         if (bloc[y][x] == 1) {
                             frontiere = x;
                         }
                     }
                 }
+            res.x = frontiere;
             if (b == BABORD) {
-                int y;
-                for (y = 0; y < hauteur; y++) {   //on cherche le pixel le plus haut sur la frontiere
+                for (int y = 0; y < hauteur; y++) {   //on cherche le pixel le plus haut sur la frontiere
                     if (bloc[y][frontiere] == 1) {
-                        pixel_y = y;
-                        pixel_x = frontiere;
+                        res.y = y;
                         break;
                     }
                 }
             } 
             else {
-                int y;
-                for (y = 0; y < hauteur; y++) {       //on cherche le pixel le plus bas sur la frontiere (ici, on sort le break de la boucle for car on veut la derniere apparition du 1)
+                for (int y = 0; y < hauteur; y++) {       //on cherche le pixel le plus bas sur la frontiere (ici, on sort le break de la boucle for car on veut la derniere apparition du 1)
                     if (bloc[y][frontiere] == 1) {
-                        pixel_y = y;
-                        pixel_x = frontiere;
-                       }
+                        res.y = y;
+                    }
+                }
+            }
+            break;
+        }
+        case SUD:
+            for (int y = 0; y < hauteur; y++) {         //on cherche la frontiere la plus au sud
+                    for (int x = 0; x < largeur; x++) {
+                        if (bloc[y][x] == 1) {
+                            frontiere = y;
+                        }
+                    }
+                }
+            res.y = frontiere;
+            if (b == BABORD) {
+                for (int x = 0; x < largeur; x++) {         //pixel le plus a droite sur la frontiere
+                    if (bloc[frontiere][x] == 1) {
+                        res.x = x;
+                    }
+                }
+            } 
+            else {
+                for (int x = largeur-1; x >= 0; x--) {         //pixel le plus a gauche sur la frontiere
+                    if (bloc[frontiere][x] == 1) {
+                        res.x = x;
+                        break;
+                    }
                 }
             }
             break;
 
-        case SUD:
-            int x1, y1;
-            for (y1 = 0; y1 < hauteur; y1++) {         //on cherche la frontiere la plus au sud
-                    for (x1 = 0; x1 < largeur; x1++) {
-                        if (bloc[y1][x1] == 1) {
-                            frontiere = y1;
-                        }
-                    }
-                }
-            if (b == BABORD) {
-                int x1;
-                for (x1 = 0; x1 < largeur; x1++) {         //pixel le plus a droite sur la frontiere
-                    if (bloc[frontiere][x1] == 1) {
-                        pixel_y = frontiere;
-                        pixel_x = x1;
-                    }
-                }
-                break;
-            } 
-            else {
-                int x;
-                for (x = largeur; x >= 0; x--) {         //pixel le plus a gauche sur la frontiere
-                    if (bloc[frontiere][x] == 1) {
-                        pixel_y = frontiere;
-                        pixel_x = x;
-                    }
-                }
-                break;
-            }
-
         case OUEST:
-            frontiere = largeur - 1;               //on cherche la frontiere la plus a gauche
-                int x3, y3;
-                for (x3 = largeur - 1; x3 >= 0; x3--) {
-                    for (y3 = 0; y3 < hauteur; y3++) {
-                        if (bloc[y3][x3] == 1) {
-                            frontiere = x3;
+            frontiere = largeur;               //on cherche la frontiere la plus a gauche
+                for (int x = largeur - 1; x >= 0; x--) {
+                    for (int y = 0; y < hauteur; y++) {
+                        if (bloc[y][x] == 1) {
+                            frontiere = x;
                         }
                     }
                 }
+            res.x = frontiere;
             if (b == BABORD) {
-                int y3;
-                for (y3 = 0; y3 < hauteur; y3++) {         //pixel le plus haut
-                    if (bloc[y3][frontiere] == 1) {
-                        pixel_y = y3;
-                        pixel_x = frontiere;
+                for (int y = 0; y < hauteur; y++) {         //pixel le plus haut
+                    if (bloc[y][frontiere] == 1) {
+                        res.y = y;
                     }
                 }
-                break;
             }
             else {
-                int y3;
-                for (y3 = 0; y3 < hauteur; y3++) {         //pixel le plus bas
-                    if (bloc[y3][frontiere] == 1) {
-                        pixel_y = y3;
-                        pixel_x = frontiere;
+                for (int y = 0; y < hauteur; y++) {         //pixel le plus bas
+                    if (bloc[y][frontiere] == 1) {
+                        res.y = y;
                     }
                 }
-                break;
             }
+           break;
         
         case NORD: 
-            frontiere = hauteur - 1;            //on cherche la frontiere la ^plus au nord
-            int x4, y4;
-            for (y4 = hauteur - 1; y4 >= 0; y4--) {
-                for (x4 = 0; x4 < largeur; x4++) {
-                    if (bloc[y4][x4] == 1) {
-                        frontiere = y4;
+            frontiere = hauteur ;            //on cherche la frontiere la plus au nord
+            for (int y = hauteur - 1; y >= 0; y--) {
+                for (int x = 0; x < largeur; x++) {
+                    if (bloc[y][x] == 1) {
+                        frontiere = y;
                     }
                 }
             }
+            res.y = frontiere;
             if (b == BABORD) {
-                int x4;
-                for (x4 = 0; x4 < largeur; x4++) {     //pixel le plus a gauche
-                    if (bloc[frontiere][x4] == 1) {
-                        pixel_x = frontiere;
-                        pixel_y = x4;
+                for (int x = 0; x < largeur; x++) {     //pixel le plus a gauche
+                    if (bloc[frontiere][x] == 1) {
+                        res.x = x;
                         break;
                     }
                 }
             }
             else {
-                int x4;
-                for (x4 = 0; x4 < largeur; x4++) {     //pixel le plus a droite
-                    if (bloc[frontiere][x4] == 1) {
-                        pixel_x = frontiere;
-                        pixel_y = x4;
+                for (int x = 0; x < largeur; x++) {     //pixel le plus a droite
+                    if (bloc[frontiere][x] == 1) {
+                        res.x = x;
                     }
                 }
-                break;
             }
+            break;
     }
-    int* p=malloc(2*sizeof(int));
-    p[0]=pixel_x;
-    p[1]=pixel_y;
-    return p;    //on retourne les coordonnees du pixel
+   return res;
 }
 
 
