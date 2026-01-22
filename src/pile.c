@@ -1,11 +1,7 @@
 #include "../include/pile.h"
 #include <stdlib.h>
 
-struct stack_s {       
-    int content[STACK_SIZE];
-    int top;
-};
-
+typedef struct stack_s *stack;
 
 stack new() {
     struct stack_s* s = malloc(sizeof(struct stack_s));  //on alloue la memoire pour une pile

@@ -4,6 +4,11 @@
 
 #define STACK_SIZE 1000000
 
+struct stack_s {
+    int top;
+    int content[1000]; // ou la taille que tu as choisie
+};
+
 typedef void* stack;        // type abstrait 
 typedef int elem;          
 

@@ -1,4 +1,4 @@
-#include "bloc.h"
+#include "../include/bloc.h"
 #include <string.h>
 #include <stdlib.h>
 

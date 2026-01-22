@@ -1,4 +1,4 @@
-#include "couleur.h"
+#include "../include/couleur.h"
 
 int luminance(pixel p) {
     return 0.202*(p.rouge) + 0.707*(p.vert) + 0.071*(p.bleu);   //formule de la luminance

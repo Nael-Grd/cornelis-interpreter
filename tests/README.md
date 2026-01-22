@@ -1,7 +1,5 @@
 # Comportement attendu des programmes :
 
-- 99bottles.ppm : affiche les paroles de la chanson "99bottles of beer on the wall"
-
 - adder.ppm : prend en entrée deux entiers et affiche leur somme
 
 - alpha.ppm : affiche les lettres de a à z
