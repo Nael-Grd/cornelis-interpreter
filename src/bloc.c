@@ -4,17 +4,21 @@
 
 // Fonction auxilliaire pour traitement
 void explorer_bloc(infoPPM* info, couleur init, int x, int y, int** traite) {
-    if (traite[x][y] == 1) return; 
+
+    if (x < 0 || x >= info->largeur || y < 0 || y >= info->hauteur) {   // si on est toujours dans l'image
+        return;
+    }
+
+    if (traite[y][x] == 1) return; 
+
     if (nom_couleur(info->pixels[y * info->largeur + x]) != init) return; // Pas la bonne couleur
 
-    traite[x][y] = 1; // traité
+    traite[y][x] = 1; // traité
 
-    int voisins[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    for (int k = 0; k < 4; ++k) {
-        int vx = (x + voisins[k][0] + info->largeur) % info->largeur;
-        int vy = (y + voisins[k][1] + info->hauteur) % info->hauteur;
-        explorer_bloc(info, init, vx, vy, traite);
-    }
+    explorer_bloc(info, init, x + 1, y, traite); // Droite
+    explorer_bloc(info, init, x - 1, y, traite); // Gauche
+    explorer_bloc(info, init, x, y + 1, traite); // Bas
+    explorer_bloc(info, init, x, y - 1, traite); // Haut
 }
 
 int** traitement(infoPPM* info, couleur init, int x, int y, int** traite) {
@@ -89,118 +93,106 @@ int nombre_blocs(infoPPM* info, int** traite) {
 
 
 Point pixel_suivant(int** bloc, direction d, bord b, int hauteur, int largeur) {
+    Point res = {0, 0};
+    int frontiere = -1;
 
-    Point res;
-    int frontiere;
-
+    // Recherche frontière
     switch (d) {
-        case EST: {
-            for (int x = 0; x < largeur; x++) {       //on cherche la frontiere la plus a l'est
-                    for (int y = 0; y < hauteur; y++) {
-                        if (bloc[y][x] == 1) {
-                            frontiere = x;
-                        }
-                    }
+        case EST:
+            for (int x = largeur - 1; x >= 0; x--) {
+                for (int y = 0; y < hauteur; y++) {
+                    if (bloc[y][x] == 1) { frontiere = x; break; }
                 }
-            res.x = frontiere;
-            if (b == BABORD) {
-                for (int y = 0; y < hauteur; y++) {   //on cherche le pixel le plus haut sur la frontiere
-                    if (bloc[y][frontiere] == 1) {
-                        res.y = y;
-                        break;
-                    }
-                }
-            } 
-            else {
-                for (int y = 0; y < hauteur; y++) {       //on cherche le pixel le plus bas sur la frontiere (ici, on sort le break de la boucle for car on veut la derniere apparition du 1)
-                    if (bloc[y][frontiere] == 1) {
-                        res.y = y;
-                    }
-                }
+                if (frontiere != -1) break;
             }
+            res.x = frontiere;
             break;
-        }
-        case SUD:
-            for (int y = 0; y < hauteur; y++) {         //on cherche la frontiere la plus au sud
-                    for (int x = 0; x < largeur; x++) {
-                        if (bloc[y][x] == 1) {
-                            frontiere = y;
-                        }
-                    }
+
+        case OUEST:
+            for (int x = 0; x < largeur; x++) {
+                for (int y = 0; y < hauteur; y++) {
+                    if (bloc[y][x] == 1) { frontiere = x; break; }
                 }
+                if (frontiere != -1) break;
+            }
+            res.x = frontiere;
+            break;
+
+        case NORD:
+            for (int y = 0; y < hauteur; y++) {
+                for (int x = 0; x < largeur; x++) {
+                    if (bloc[y][x] == 1) { frontiere = y; break; }
+                }
+                if (frontiere != -1) break;
+            }
             res.y = frontiere;
-            if (b == BABORD) {
-                for (int x = 0; x < largeur; x++) {         //pixel le plus a droite sur la frontiere
-                    if (bloc[frontiere][x] == 1) {
-                        res.x = x;
-                    }
+            break;
+
+        case SUD:
+            for (int y = hauteur - 1; y >= 0; y--) {
+                for (int x = 0; x < largeur; x++) {
+                    if (bloc[y][x] == 1) { frontiere = y; break; }
                 }
-            } 
-            else {
-                for (int x = largeur-1; x >= 0; x--) {         //pixel le plus a gauche sur la frontiere
-                    if (bloc[frontiere][x] == 1) {
-                        res.x = x;
-                        break;
-                    }
+                if (frontiere != -1) break;
+            }
+            res.y = frontiere;
+            break;
+    }
+
+    if (frontiere == -1) {   // si aucun pixel trouvé 
+        return res; 
+    }
+
+    // Recherche pixel sur frontière
+    switch (d) {
+        case EST:
+            if (b == BABORD) { // Haut (Y min)
+                for (int y = 0; y < hauteur; y++) {
+                    if (bloc[y][frontiere] == 1) { res.y = y; break; }
+                }
+            } else { // Bas (Y max)
+                for (int y = hauteur - 1; y >= 0; y--) {
+                    if (bloc[y][frontiere] == 1) { res.y = y; break; }
                 }
             }
             break;
 
         case OUEST:
-            frontiere = largeur;               //on cherche la frontiere la plus a gauche
-                for (int x = largeur - 1; x >= 0; x--) {
-                    for (int y = 0; y < hauteur; y++) {
-                        if (bloc[y][x] == 1) {
-                            frontiere = x;
-                        }
-                    }
+            if (b == BABORD) { // Bas (Y max)
+                for (int y = hauteur - 1; y >= 0; y--) {
+                    if (bloc[y][frontiere] == 1) { res.y = y; break; }
                 }
-            res.x = frontiere;
-            if (b == BABORD) {
-                for (int y = 0; y < hauteur; y++) {         //pixel le plus haut
-                    if (bloc[y][frontiere] == 1) {
-                        res.y = y;
-                    }
+            } else { // Haut (Y min)
+                for (int y = 0; y < hauteur; y++) {
+                    if (bloc[y][frontiere] == 1) { res.y = y; break; }
                 }
             }
-            else {
-                for (int y = 0; y < hauteur; y++) {         //pixel le plus bas
-                    if (bloc[y][frontiere] == 1) {
-                        res.y = y;
-                    }
-                }
-            }
-           break;
-        
-        case NORD: 
-            frontiere = hauteur ;            //on cherche la frontiere la plus au nord
-            for (int y = hauteur - 1; y >= 0; y--) {
+            break;
+
+        case NORD:
+            if (b == BABORD) { // Gauche (X min)
                 for (int x = 0; x < largeur; x++) {
-                    if (bloc[y][x] == 1) {
-                        frontiere = y;
-                    }
+                    if (bloc[frontiere][x] == 1) { res.x = x; break; }
+                }
+            } else { // Droite (X max)
+                for (int x = largeur - 1; x >= 0; x--) {
+                    if (bloc[frontiere][x] == 1) { res.x = x; break; }
                 }
             }
-            res.y = frontiere;
-            if (b == BABORD) {
-                for (int x = 0; x < largeur; x++) {     //pixel le plus a gauche
-                    if (bloc[frontiere][x] == 1) {
-                        res.x = x;
-                        break;
-                    }
+            break;
+
+        case SUD:
+            if (b == BABORD) { // Droite (X max)
+                for (int x = largeur - 1; x >= 0; x--) {
+                    if (bloc[frontiere][x] == 1) { res.x = x; break; }
                 }
-            }
-            else {
-                for (int x = 0; x < largeur; x++) {     //pixel le plus a droite
-                    if (bloc[frontiere][x] == 1) {
-                        res.x = x;
-                    }
+            } else { // Gauche (X min)
+                for (int x = 0; x < largeur; x++) {
+                    if (bloc[frontiere][x] == 1) { res.x = x; break; }
                 }
             }
             break;
     }
-   return res;
+
+    return res;
 }
-
-
-    

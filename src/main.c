@@ -22,7 +22,6 @@ int main(int argc, char* argv[]) {
     infoPPM* info = informations_PPM(file); //on recupere les infos du fichier (largeur, hauteur, couleuMax, pixels)
 
     stack s = new();     //initialisation de la pile d'actions
-    struct stack_s* r = s;       //comme ca on pourra manipuler r->content et r->top
     int hauteur = info->hauteur, largeur = info->largeur;         //pour faciliter la manipulation
     int** traite = malloc(hauteur * sizeof(int*)); // On crée les lignes
     for (int i = 0; i < hauteur; i++) {
@@ -79,27 +78,27 @@ int main(int argc, char* argv[]) {
             int a;                            //va nous servir a stocker le top de la pile d'actions
             switch(dif_c) {
                 case 0:
-                    if (dif_l == 1) push(&s, taille_bloc(bloc_courant, largeur, hauteur));
-                    if (dif_l == 2 && r->top >= 0) pop(&s);
+                    if (dif_l == 1) push(s, taille_bloc(bloc_courant, largeur, hauteur));
+                    if (dif_l == 2 && stack_size(s) >= 1) pop(s);
                 break;
                 case 1:
-                    if (r->top >= 1) {
-                        if (dif_l == 0) somme(&s);
-                        if (dif_l == 1) difference(&s);
-                        if (dif_l == 2) produit(&s);
+                    if (stack_size(s) >= 2) {
+                        if (dif_l == 0) somme(s);
+                        if (dif_l == 1) difference(s);
+                        if (dif_l == 2) produit(s);
                     }
                 break;
                 case 2:
-                    if (r->top >= 0 && dif_l == 2) zero(&s); // un seul élément suffit pour Not
-                    if (r->top >= 1) {
-                        if (dif_l == 0) division(&s);
-                        if (dif_l == 1) reste(&s);
+                    if (stack_size(s) >= 1 && dif_l == 2) zero(s); // un seul élément suffit pour Not
+                    if (stack_size(s) >= 2) {
+                        if (dif_l == 0) division(s);
+                        if (dif_l == 1) reste(s);
                     }
                 break;
                 case 3:
-                    if (dif_l == 0 && r->top >= 1) plusgrand(&s);
-                    if (r->top >= 0) {
-                        a = r->content[r->top]; pop(&s);
+                    if (dif_l == 0 && stack_size(s) >= 2) plusgrand(s);
+                    if (stack_size(s) >= 1) {
+                        a = peek(s);
                         if (dif_l == 1) {
                             for (int i = 0; i < a; i++) d = changer_direction(d); 
                         }
@@ -109,22 +108,22 @@ int main(int argc, char* argv[]) {
                     } 
                 break;
                 case 4:
-                    if (dif_l == 0 && r->top >= 0) duplique(&s);
-                    if (dif_l == 1 && r->top >= 1) tourne(&s);
+                    if (dif_l == 0 && stack_size(s) >= 1) duplique(s);
+                    if (dif_l == 1 && stack_size(s) >= 2) tourne(s);
                     if (dif_l == 2) {
                         int val;
                         printf("Veuillez entrer un entier : ");
-                        if(scanf("%d", &val) == 1) push(&s, val);
+                        if(scanf("%d", &val) == 1) push(s, val);
                     }
                 break;
                 case 5:
                     if (dif_l == 0) {
                         char car;
                         printf("Entrer un caractère : ");
-                        if(scanf(" %c", &car) == 1) push(&s, (int)car);
+                        if(scanf(" %c", &car) == 1) push(s, (int)car);
                     }
-                    if (r->top >= 0) {
-                        a = r->content[r->top]; pop(&s);
+                    if (stack_size(s) >= 1) {
+                        a = peek(s);
                         if (dif_l == 1) printf("%d\n", a);
                         if (dif_l == 2) printf("%c", (char)a);
                     }

@@ -1,22 +1,30 @@
+TARGET = cornelis
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
+CFLAGS = -Wall -Wextra -g 
 
-all: play
+SRCDIR = src
+OBJDIR = obj
 
-play : pile.o lecturePPM.o couleur.o bloc.o main.o 
-	$(CC) $(CFLAGS) -o play pile.o lecturePPM.o couleur.o  main.o
+SOURCES = $(wildcard $(SRCDIR)/*.c)
+# On transforme src/file.c en obj/file.o
+OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
-pile.o: pile.c pile.h
-	$(CC) $(CFLAGS) -c pile.c
+# La cible principale
+all: $(TARGET)
 
-lecturePPM.o: lecturePPM.c lecturePPM.h
-	$(CC) $(CFLAGS) -c lecturePPM.c
+# L'exécutable dépend des objets
+$(TARGET): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $^
 
-couleur.o: couleur.c couleur.h
-	$(CC) $(CFLAGS) -c couleur.c
+# Chaque objet dépend de son .c ET du dossier obj
+$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-bloc.o: bloc.c bloc.h
-	$(CC) $(CFLAGS) -c bloc.c
+# Règle pour créer le dossier
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
 
-main.o: main.c pile.h bloc.h couleur.h lecturePPM.h
-	$(CC) $(CFLAGS) -c main.c
+clean:
+	rm -rf $(OBJDIR) $(TARGET)
+
+.PHONY: all clean

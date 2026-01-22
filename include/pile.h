@@ -1,16 +1,10 @@
-#ifndef STACK_H
+#ifndef PILE_H
+#define PILE_H
 
-#define STACK_H
 
-#define STACK_SIZE 1000000
-
-struct stack_s {
-    int top;
-    int content[1000]; // ou la taille que tu as choisie
-};
-
-typedef void* stack;        // type abstrait 
-typedef int elem;          
+typedef int elem;
+typedef void* stack;    // type abstrait
+        
 
 /*@requires nothing
 @assigns a new stack
@@ -25,7 +19,7 @@ int isEmpty(stack s);
 /*@requires valid adress of s, e int
 @assigns *s
 @ensures add e at the top of s s*/
-void push(stack s,elem e);
+void push(stack s, elem e);
 
 /*@requires valid adress of s
 @assigns *s
@@ -77,5 +71,8 @@ void duplique(stack s);
 @assigns *s
 @ensures pop two elements and make the stack turn the first element time up to the second one deep */
 void tourne(stack s);
+
+elem peek(stack s);      
+int stack_size(stack s);
 
 #endif

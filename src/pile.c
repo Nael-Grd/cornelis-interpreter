@@ -1,16 +1,21 @@
 #include "../include/pile.h"
 #include <stdlib.h>
 
-typedef struct stack_s *stack;
+
+struct stack_s {
+    int top;
+    elem content[1000];
+};
+
 
 stack new() {
     struct stack_s* s = malloc(sizeof(struct stack_s));  //on alloue la memoire pour une pile
     if (s == NULL) {
         perror("Erreur d'allocation de la pile");
-        exit(EXIT_FAILURE);
+        exit(1);
     }
     s->top=-1;                                  
-    return (stack)s;
+    return s;
 }
 
 int isEmpty(stack s) {
@@ -18,7 +23,7 @@ int isEmpty(stack s) {
     return (r->top < 0);
 }
 
-void push(stack s,elem e) {
+void push(stack s, int e) {
     struct stack_s* r = s;
     r->top+=1;
     r->content[r->top]=e;
@@ -146,6 +151,16 @@ void tourne(stack s) {
     }
 }
 
+elem peek(stack s) {
+    struct stack_s* r = s;
+    if (r->top < 0) return 0; // Sécurité
+    return r->content[r->top];
+}
+
+int stack_size(stack s) {
+    struct stack_s* r = s;
+    return r->top + 1;  // top=0 signifie 1 élément
+}
 
 
 
