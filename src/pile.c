@@ -38,7 +38,7 @@ void pop(stack s) {
 
 void somme(stack s) {
     struct stack_s* r = s;
-    if (r->top >= 1) {          // necessite 2 elements dans la pile 
+    if (stack_size(s) < 2) {          // necessite 2 elements dans la pile 
         int a = r->content[r->top];    
         int b = r->content[r->top-1];
         pop(s);                      
@@ -49,7 +49,7 @@ void somme(stack s) {
 
 void difference(stack s) {
     struct stack_s* r = s;
-    if (r->top >= 1) {        
+    if (stack_size(s) < 2) {        
         int a = r->content[r->top];    
         int b = r->content[r->top-1];
         pop(s);              
@@ -60,7 +60,7 @@ void difference(stack s) {
 
 void produit(stack s) {
     struct stack_s* r = s;
-    if (r->top >= 1) {          
+    if (stack_size(s) < 2) {          
         int a = r->content[r->top];    
         int b = r->content[r->top-1];
         pop(s);                      
@@ -71,18 +71,19 @@ void produit(stack s) {
 
 void division(stack s) {
     struct stack_s* r = s;
-    if (r->top >= 1) {          
+    if (stack_size(s) < 2) {          
         int a = r->content[r->top];    
         int b = r->content[r->top-1];
         pop(s);                      
         pop(s);
+        if (a == 0) return;
         push(s, b/a);              
     }
 }
 
 void reste(stack s) {
     struct stack_s* r = s;
-    if (r->top >= 1) {          
+    if (stack_size(s) < 2) {          
         int a = r->content[r->top];    
         int b = r->content[r->top-1];
         pop(s);                      
@@ -107,7 +108,7 @@ void zero(stack s) {
 
 void plusgrand(stack s) {
     struct stack_s* r = s;
-    if (r->top >= 1) {       
+    if (stack_size(s) < 2) {       
         int a = r->content[r->top];    
         int b = r->content[r->top-1];
         pop(s);                      
@@ -133,20 +134,22 @@ void duplique(stack s) {
 
 void tourne(stack s) {
     struct stack_s* r = s;
-    if (r->top >= 1) {     
-        int a = r->content[r->top];     
-        int b = r->content[r->top-1];   
+    if (stack_size(s) < 2) {     
+        int a = r->content[r->top];   // nb rotations
+        int b = r->content[r->top-1];   // profondeur
         pop(s);
         pop(s);
-    
-        if (r->top >= a - 1 && a > 0) {     
-            for (int i = 0; i < b; i++) {   
-                int t = r->content[r->top]; 
-                for (int j = 0; j < a - 1; j++) {   
-                    r->content[r->top - j] = r->content[r->top - (j + 1)];  
-                }
-                r->content[r->top - (a - 1)] = t;  
+
+        if (b <= 0 || stack_size(s) < b) return;
+        int nb_rotations = a % b;
+        if (nb_rotations < 0) nb_rotations += b;
+        
+        for (int i = 0; i < nb_rotations; i++) {   
+            int t = r->content[r->top]; 
+            for (int j = 0; j < b - 1; j++) {   
+                r->content[r->top - j] = r->content[r->top - (j + 1)];  
             }
+            r->content[r->top - (b - 1)] = t;  
         }
     }
 }

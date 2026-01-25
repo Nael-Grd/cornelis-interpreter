@@ -15,10 +15,10 @@ void explorer_bloc(infoPPM* info, couleur init, int x, int y, int** traite) {
 
     traite[y][x] = 1; // traité
 
-    explorer_bloc(info, init, x + 1, y, traite); // Droite
-    explorer_bloc(info, init, x - 1, y, traite); // Gauche
-    explorer_bloc(info, init, x, y + 1, traite); // Bas
-    explorer_bloc(info, init, x, y - 1, traite); // Haut
+    explorer_bloc(info, init, (x + 1) % info->largeur, y, traite);
+    explorer_bloc(info, init, (x - 1 + info->largeur) % info->largeur, y, traite);
+    explorer_bloc(info, init, x, (y + 1) % info->hauteur, traite);
+    explorer_bloc(info, init, x, (y - 1 + info->hauteur) % info->hauteur, traite);
 }
 
 int** traitement(infoPPM* info, couleur init, int x, int y, int** traite) {

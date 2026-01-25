@@ -9,45 +9,34 @@ int estPassante(pixel p) {
 }
 
 couleur nom_couleur(pixel p) {
-    if (p.rouge == 255 && p.vert == 128 && p.bleu == 128) {
-        return rouge_clair;
-    } else if (p.rouge == 255 && p.vert == 255 && p.bleu == 128) {
-        return jaune_clair;
-    } else if (p.rouge == 128 && p.vert == 255 && p.bleu == 128) {
-        return vert_clair;
-    } else if (p.rouge == 128 && p.vert == 255 && p.bleu == 255) {
-        return cyan_clair;
-    } else if (p.rouge == 128 && p.vert == 128 && p.bleu == 255) {
-        return bleu_clair;
-    } else if (p.rouge == 255 && p.vert == 128 && p.bleu == 255) {
-        return magenta_clair;
-    } else if (p.rouge == 255 && p.vert == 0 && p.bleu == 0) {
-        return rouge_normal;
-    } else if (p.rouge == 255 && p.vert == 255 && p.bleu == 0) {
-        return jaune_normal;
-    } else if (p.rouge == 0 && p.vert == 255 && p.bleu == 0) {
-        return vert_normal;
-    } else if (p.rouge == 0 && p.vert == 255 && p.bleu == 255) {
-        return cyan_normal;
-    } else if (p.rouge == 0 && p.vert == 0 && p.bleu == 255) {
-        return bleu_normal;
-    } else if (p.rouge == 255 && p.vert == 0 && p.bleu == 255) {
-        return magenta_normal;
-    } else if (p.rouge == 128 && p.vert == 0 && p.bleu == 0) {
-        return rouge_fonce;
-    } else if (p.rouge == 128 && p.vert == 128 && p.bleu == 0) {
-        return jaune_fonce;
-    } else if (p.rouge == 0 && p.vert == 128 && p.bleu == 0) {
-        return vert_fonce;
-    } else if (p.rouge == 0 && p.vert == 128 && p.bleu == 128) {
-        return cyan_fonce;
-    } else if (p.rouge == 0 && p.vert == 0 && p.bleu == 128) {
-        return bleu_fonce;
-    } else if (p.rouge == 128 && p.vert == 0 && p.bleu == 128) {
-        return magenta_fonce;
-    } else {
-        return autre;    //cas couleur non codante
-    }
+    // On définit des seuils pour accepter de légères variations
+    int r = p.rouge, v = p.vert, b = p.bleu;
+
+    // CLAIR (255, 128, 128)
+    if (r > 200 && v > 100 && v < 150 && b > 100 && b < 150) return rouge_clair;
+    if (r > 200 && v > 200 && b > 100 && b < 150) return jaune_clair;
+    if (r > 100 && r < 150 && v > 200 && b > 100 && b < 150) return vert_clair;
+    if (r > 100 && r < 150 && v > 200 && b > 200) return cyan_clair;
+    if (r > 100 && r < 150 && v > 100 && v < 150 && b > 200) return bleu_clair;
+    if (r > 200 && v > 100 && v < 150 && b > 200) return magenta_clair;
+
+    // NORMAL (255, 0, 0)
+    if (r > 200 && v < 50 && b < 50) return rouge_normal;
+    if (r > 200 && v > 200 && b < 50) return jaune_normal;
+    if (r < 50 && v > 200 && b < 50) return vert_normal;
+    if (r < 50 && v > 200 && b > 200) return cyan_normal;
+    if (r < 50 && v < 50 && b > 200) return bleu_normal;
+    if (r > 200 && v < 50 && b > 200) return magenta_normal;
+
+    // FONCÉ (128, 0, 0)
+    if (r > 100 && r < 150 && v < 50 && b < 50) return rouge_fonce;
+    if (r > 100 && r < 150 && v > 100 && v < 150 && b < 50) return jaune_fonce;
+    if (r < 50 && v > 100 && v < 150 && b < 50) return vert_fonce;
+    if (r < 50 && v > 100 && v < 150 && b > 100 && b < 150) return cyan_fonce;
+    if (r < 50 && v < 50 && b > 100 && b < 150) return bleu_fonce;
+    if (r > 100 && r < 150 && v < 50 && b > 100 && b < 150) return magenta_fonce;
+
+    return autre; 
 }
 
 int dif_couleur(couleur c1,couleur c2) {
@@ -76,7 +65,7 @@ int dif_couleur(couleur c1,couleur c2) {
 }   
 
 int dif_luminosite(couleur c1, couleur c2) {
-    int luminosite1=0, luminosite2=0;
+    int luminosite1 = -1, luminosite2 = -1;
     switch (c1) {
         case rouge_clair:
         case jaune_clair:
@@ -84,7 +73,7 @@ int dif_luminosite(couleur c1, couleur c2) {
         case cyan_clair:
         case bleu_clair:
         case magenta_clair:
-            luminosite1 = 1;  // on numerote 1 la lumonosite claire
+            luminosite1 = 0;  // on numerote 0 la lumonosite claire
             break;
         case rouge_normal:
         case jaune_normal:
@@ -92,7 +81,7 @@ int dif_luminosite(couleur c1, couleur c2) {
         case cyan_normal:
         case bleu_normal:
         case magenta_normal:
-            luminosite1 = 2;  // on numerote 2 la lumonosite normale
+            luminosite1 = 1;  // on numerote 1 la lumonosite normale
             break;
         case rouge_fonce:
         case jaune_fonce:
@@ -100,7 +89,7 @@ int dif_luminosite(couleur c1, couleur c2) {
         case cyan_fonce:
         case bleu_fonce:
         case magenta_fonce:
-            luminosite1 = 3;  // on numerote 3 la lumonosite foncee
+            luminosite1 = 2;  // on numerote 2 la lumonosite foncee
             break;
         default:
             return -1;  // cas couleur non codante, on s'arret la
@@ -113,7 +102,7 @@ int dif_luminosite(couleur c1, couleur c2) {
         case cyan_clair:
         case bleu_clair:
         case magenta_clair:
-            luminosite2 = 1;  
+            luminosite2 = 0;  
             break;
         case rouge_normal:
         case jaune_normal:
@@ -121,7 +110,7 @@ int dif_luminosite(couleur c1, couleur c2) {
         case cyan_normal:
         case bleu_normal:
         case magenta_normal:
-            luminosite2 = 2;  
+            luminosite2 = 1;  
             break;
         case rouge_fonce:
         case jaune_fonce:
@@ -129,14 +118,15 @@ int dif_luminosite(couleur c1, couleur c2) {
         case cyan_fonce:
         case bleu_fonce:
         case magenta_fonce:
-            luminosite2 = 3;  
+            luminosite2 = 2;  
             break;
         default:
             return -1;  
     }
-    int dif=luminosite2-luminosite1;
-    if (dif < 0) {
-        dif += 3;  // 3 etant la taille du cycle et comme on parcours le cycle de gauche a droite
+    if (luminosite1 != -1 && luminosite2 != -1) {
+        int dif = luminosite2 - luminosite1;
+        while (dif < 0) dif += 3; 
+        return dif % 3;
     }
-    return dif;
+    return -1;
 }
