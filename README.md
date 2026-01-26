@@ -103,7 +103,7 @@ You will find a number of input files (example.ppm) in the /tests directory.
     ```
 
 2.  **Run the program :**
-    Essayer les fichiers tests
+    Try the test files
 
     ```bash
     ./cornelis tests/alpha.ppm
